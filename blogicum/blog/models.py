@@ -58,15 +58,24 @@ class Post(BaseModel):
         verbose_name='Заголовок',
         max_length=256
     )
+
     text = models.TextField(
         verbose_name='Текст'
     )
+
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text=(
             'Если установить дату и время в будущем — можно делать '
             'отложенные публикации.'
         )
+    )
+
+    image = models.ImageField(
+        verbose_name='Изображение',
+        upload_to='images',
+        null=True,
+        blank=True
     )
 
     author = models.ForeignKey(

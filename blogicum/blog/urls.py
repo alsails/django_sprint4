@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -20,7 +22,7 @@ posts_url = [
         views.delete_comment,
         name='delete_comment',
     ),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 profile_url = [
     path('edit/', views.edit_profile, name='edit_profile'),

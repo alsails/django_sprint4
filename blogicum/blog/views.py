@@ -14,7 +14,7 @@ def get_posts_from_db(object):
         Q(is_published=True)
         & Q(pub_date__lte=now())
         & Q(category__is_published=True)
-    )
+    ).annotate(comment_count=Count('comments'))
 
 
 def paginator(request, data):
@@ -41,10 +41,10 @@ def post_detail(request, pk):
     post = get_object_or_404(
         Post,
         pk=pk,
-        is_published=True,
-        pub_date__lte=now(),
-        category__is_published=True
     )
+
+    if request.user != post.author:
+        post = get_object_or_404(get_posts_from_db(Post.objects), id=pk)
 
     comments = post.comments.order_by('created_at')
     form = CommentForm()
@@ -62,7 +62,12 @@ def category_posts(request, category_slug):
         slug=category_slug,
         is_published=True)
 
-    post_list = get_posts_from_db(Post.objects).order_by('-pub_date')
+    post_list = Post.objects.filter(
+        Q(is_published=True)
+        & Q(category=category)
+        & Q(pub_date__lte=now())
+    ).order_by('-pub_date')
+
     page_obj = paginator(request, post_list)
 
     content = {
